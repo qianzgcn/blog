@@ -3,6 +3,7 @@ on: push
 
 permissions:
   contents: write
+
 jobs:
   build:
     name: 构建
@@ -10,12 +11,19 @@ jobs:
     steps: 
     - name: 读取仓库内容
       uses: actions/checkout@v4
-    - name: 安装依赖&打包
-      run:
+
+    - name: 安装依赖
+      working-directory: ./blog
+      run: 
+        pwd
         npm i
+
+    - name: 打包
+      run:
         npm run build
+
     - name: 部署
       uses: JamesIves/github-pages-deploy-action@v4
       with:
         branch: gh-pages
-        folder: blog/build
+        folder: build
