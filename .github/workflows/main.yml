@@ -15,7 +15,6 @@ jobs:
     - name: 安装依赖
       working-directory: ./blog
       run: 
-        pwd
         npm i
 
     - name: 打包
