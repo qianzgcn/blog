@@ -1,4 +1,4 @@
-name: 打包react项目
+name: 构建部署BLOG
 on: push
 
 permissions:
@@ -9,7 +9,7 @@ jobs:
     name: 构建
     runs-on: ubuntu-latest
     steps: 
-    - name: 读取仓库内容
+    - name: 拉取代码
       uses: actions/checkout@v4
 
     - name: 安装依赖
