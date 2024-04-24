@@ -38,16 +38,20 @@ jobs:
         chmod 600 ~/.ssh/id_rsa
 
     - name: 构建docker镜像
+      env: 
+        SSH_HOST: ${{ secrets.SSH_HOST }}
       run: |
         docker build -t blog .
         docker save "blog | ssh -o StrictHostKeyChecking=no "$operation@$SSH_HOST" 'docker load'
 
     - name: 部署到服务器docker
+      env: 
+        SSH_HOST: ${{ secrets.SSH_HOST }}
       run: | 
-        ssh -o StrictHostKeyChecking=no "operation@$SSH_HOST" << EOF
+        ssh -o StrictHostKeyChecking=no "operation@$SSH_HOST" '
           docker ps
           docker stop blog-v1 || true
           docker rm blog-v1 || true
           docker rmi blog || true
           docker run -d -p 1234:80 --name blog-v1  blog
-        EOF
+        '
