@@ -27,19 +27,26 @@ jobs:
         branch: gh-pages
         folder: build
 
-    - name: 部署到服务器docker
+    - name: 创建并使用docker远程上下文
       env: 
         SSH_HOST: ${{ secrets.SSH_HOST }}
         SSH_PRIVATE_KEY: ${{ secrets.SSH_KEY }}
+      shell: bash
       run: | 
         mkdir -p ~/.ssh
         echo "$SSH_PRIVATE_KEY" > ~/.ssh/id_rsa
         chmod 600 ~/.ssh/id_rsa
-        ssh -o StrictHostKeyChecking=no "operation@$SSH_HOST" << EOF
-          docker ps
-          docker stop blog-v1 || true
-          docker rm blog-v1 || true
-          docker rmi blog || true
-          docker build -t blog .
-          docker run -d -p 1234:80 --name blog-v1  blog
-        EOF
+        docker context create remote --docker "host=ssh://operation@$SSH_HOST"
+        docker context use remote
+
+    - name: 停止历史容器并删除镜像
+      run: |
+        docker ps
+        docker stop blog-v1 || true
+        docker rm blog-v1 || true
+        docker rmi blog || true
+    
+    - name: 构建镜像并运行容器
+      run: |
+        docker build -t blog .
+        docker run -d -p 1234:80 --name blog-v1  blog
