@@ -42,7 +42,7 @@ jobs:
         SSH_HOST: ${{ secrets.SSH_HOST }}
       run: |
         docker build -t blog .
-        docker save "blog | ssh -o StrictHostKeyChecking=no "$operation@$SSH_HOST" 'docker load'
+        docker save blog | ssh -o StrictHostKeyChecking=no "$operation@$SSH_HOST" 'docker load'
 
     - name: 部署到服务器docker
       env: 
