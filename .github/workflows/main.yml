@@ -52,6 +52,5 @@ jobs:
           docker ps
           docker stop blog-v1 || true
           docker rm blog-v1 || true
-          docker rmi blog || true
           docker run -d -p 1234:80 --name blog-v1  blog
         '
