@@ -27,7 +27,7 @@ jobs:
         branch: gh-pages
         folder: build
 
-    - name: 登录到云服务器
+    - name: 部署到服务器docker
       env: 
         SSH_HOST: ${{ secrets.SSH_HOST }}
         SSH_PRIVATE_KEY: ${{ secrets.SSH_KEY }}
@@ -35,15 +35,11 @@ jobs:
         mkdir -p ~/.ssh
         echo "$SSH_PRIVATE_KEY" > ~/.ssh/id_rsa
         chmod 600 ~/.ssh/id_rsa
-        ssh -o StrictHostKeyChecking=no "operation@$SSH_HOST" "docker ps"
-
-    - name: 停止历史容器并删除镜像
-      run: |
-        docker stop blog-v1 || true
-        docker rm blog-v1 || true
-        docker rmi blog || true
-    
-    - name: 构建镜像并运行容器
-      run: |
-        docker build -t blog .
-        docker run -d -p 1234:80 --name blog-v1  blog
+        ssh -o StrictHostKeyChecking=no "operation@$SSH_HOST" << EOF
+          docker ps
+          docker stop blog-v1 || true
+          docker rm blog-v1 || true
+          docker rmi blog || true
+          docker build -t blog .
+          docker run -d -p 1234:80 --name blog-v1  blog
+        EOF
